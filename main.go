@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"github.com/go-ping/ping"
 )
 
@@ -14,29 +15,29 @@ type Peer struct {
 }
 
 func main() {
-	nic1 := Peer{remtoeAddress: "192.168.130.3", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost"}
-	nic2 := Peer{remtoeAddress: "10.10.10.3", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost"}
-
-	localPinger, err := ping.NewPinger(nic1.remtoeAddress)
-	localPinger.SetPrivileged(true)
-	localPinger.Count = 1
-	if err != nil {
-			panic(err)
-	}
-
-	remotePinger, err := ping.NewPinger(nic2.remtoeAddress)
-	remotePinger.SetPrivileged(true)
-	remotePinger.Count = 1
-	if err != nil {
-			panic(err)
-	}
-
+	nic1 := Peer{remtoeAddress: "192.168.130.1", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost"}
+	nic2 := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost"}
+	
 	// TODO: 無限ループに
 	for i := 0; i < 3; i++ {
+		localPinger, err := ping.NewPinger(nic1.remtoeAddress)
+		localPinger.SetPrivileged(true)
+		localPinger.Count = 5
+		if err != nil {
+			panic(err)
+		}
+		
+		remotePinger, err := ping.NewPinger(nic2.remtoeAddress)
+		remotePinger.SetPrivileged(true)
+		remotePinger.Count = 5
+		if err != nil {
+				panic(err)
+		}
+
+		// TODO: 並列化
 		localPinger.Run()
 		remotePinger.Run()
 	
-		// TODO: 並列化
 		localStats := localPinger.Statistics()
 		fmt.Printf("loss1: %f\n", localStats.PacketLoss)
 		fmt.Printf("AvgRtt1: %s\n", localStats.AvgRtt)
@@ -55,7 +56,8 @@ func main() {
 		}
 
 		fmt.Println()
-		// TODO: loging & sleep
+		// TODO: loging
+		time.Sleep(3 * time.Second)
 	}
 }
 
