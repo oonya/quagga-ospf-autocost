@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"time"
+	"os"
 	"github.com/go-ping/ping"
+	"log"
 )
 
 // TODO: Peerよりいい名前募
@@ -17,19 +19,26 @@ type Peer struct {
 func main() {
 	nic1 := Peer{remtoeAddress: "192.168.130.1", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost"}
 	nic2 := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost"}
+
+	file, err := os.OpenFile("zero.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+	log.SetOutput(file)
 	
 	// TODO: 無限ループに
 	for i := 0; i < 3; i++ {
 		localPinger, err := ping.NewPinger(nic1.remtoeAddress)
 		localPinger.SetPrivileged(true)
-		localPinger.Count = 5
+		localPinger.Count = 3
 		if err != nil {
 			panic(err)
 		}
 		
 		remotePinger, err := ping.NewPinger(nic2.remtoeAddress)
 		remotePinger.SetPrivileged(true)
-		remotePinger.Count = 5
+		remotePinger.Count = 3
 		if err != nil {
 				panic(err)
 		}
@@ -56,12 +65,12 @@ func main() {
 		}
 
 		fmt.Println()
-		// TODO: loging
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
 func setCost(cost int, addr string, nic string) error {
 	// TODO: exec shell script
+	log.Printf("cost of %s is set to %d", addr, cost)
 	return nil
 }
