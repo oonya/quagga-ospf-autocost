@@ -17,8 +17,8 @@ type Peer struct {
 }
 
 func main() {
-	nic1 := Peer{remtoeAddress: "192.168.130.1", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost"}
-	nic2 := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost"}
+	wlanNic := Peer{remtoeAddress: "192.168.130.1", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost"}
+	ranNic := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost"}
 
 	file, err := os.OpenFile("zero.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
     if err != nil {
@@ -29,39 +29,40 @@ func main() {
 	
 	// TODO: 無限ループに
 	for i := 0; i < 3; i++ {
-		localPinger, err := ping.NewPinger(nic1.remtoeAddress)
-		localPinger.SetPrivileged(true)
-		localPinger.Count = 3
+		wlanPinger, err := ping.NewPinger(wlanNic.remtoeAddress)
+		wlanPinger.SetPrivileged(true)
+		wlanPinger.Count = 1
 		if err != nil {
 			panic(err)
 		}
 		
-		remotePinger, err := ping.NewPinger(nic2.remtoeAddress)
-		remotePinger.SetPrivileged(true)
-		remotePinger.Count = 3
+		ranPinger, err := ping.NewPinger(ranNic.remtoeAddress)
+		ranPinger.SetPrivileged(true)
+		ranPinger.Count = 1
 		if err != nil {
 				panic(err)
 		}
 
 		// TODO: 並列化
-		localPinger.Run()
-		remotePinger.Run()
+		wlanPinger.Run()
+		ranPinger.Run()
 	
-		localStats := localPinger.Statistics()
-		fmt.Printf("loss1: %f\n", localStats.PacketLoss)
-		fmt.Printf("AvgRtt1: %s\n", localStats.AvgRtt)
+		wlanStats := wlanPinger.Statistics()
+		fmt.Printf("loss1: %f\n", wlanStats.PacketLoss)
+		fmt.Printf("AvgRtt1: %s\n", wlanStats.AvgRtt)
 
-		remoteStats := remotePinger.Statistics()
-		fmt.Printf("loss2: %f\n", remoteStats.PacketLoss)
-		fmt.Printf("AvgRtt2: %s\n", remoteStats.AvgRtt)
+		ranStats := ranPinger.Statistics()
+		fmt.Printf("loss2: %f\n", ranStats.PacketLoss)
+		fmt.Printf("AvgRtt2: %s\n", ranStats.AvgRtt)
 
-		if localStats.AvgRtt < remoteStats.AvgRtt {
-			if err := setCost(1, nic1.localAddress, nic1.localIf); err != nil {
+		if wlanStats.AvgRtt < ranStats.AvgRtt {
+			if err := setCost(1, wlanNic.localAddress, wlanNic.localIf); err != nil {
 				panic(err)
 			}
-			if err := setCost(2, nic1.remtoeAddress, nic1.remoteIf); err != nil {
+			if err := setCost(2, wlanNic.remtoeAddress, wlanNic.remoteIf); err != nil {
 				panic(err)
 			}
+			// TODO: nic2に対してもsetCostを呼ぶ
 		}
 
 		fmt.Println()
