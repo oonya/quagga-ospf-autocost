@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-ping/ping"
 	"log"
 	"os"
+	"os/exec"
+	"strconv"
 	"time"
+
+	"github.com/go-ping/ping"
 )
 
 // TODO: Peerよりいい名前募
@@ -85,8 +88,16 @@ func main() {
 }
 
 func setCost(cost int, peer *Peer) error {
-	// TODO: exec shell script
+	localArgs := []string{"cost-set.sh", "localhost", peer.localIf, strconv.Itoa(cost)}
+	if err := exec.Command("/usr/bin/expect", localArgs...).Run(); err != nil {
+		return err
+	}
 	log.Printf("cost of %s is set to %d", peer.localAddress, cost)
+
+	remoteArgs := []string{"cost-set.sh", "192.168.100.1", peer.remoteIf, strconv.Itoa(cost)}
+	if err := exec.Command("/usr/bin/expect", remoteArgs...).Run(); err != nil {
+		return err
+	}
 	log.Printf("cost of %s is set to %d", peer.remtoeAddress, cost)
 	return nil
 }
