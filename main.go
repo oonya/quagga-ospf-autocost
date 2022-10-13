@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -21,7 +20,7 @@ type Peer struct {
 }
 
 func main() {
-	wlanNic := Peer{remtoeAddress: "192.168.130.1", remoteIf: "enp0s10", localIf: "enp0s10", localAddress: "localhost", preffered: false}
+	wlanNic := Peer{remtoeAddress: "192.168.120.1", remoteIf: "wlan0", localIf: "wlan1", localAddress: "localhost", preffered: false}
 	ranNic := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost", preffered: true}
 
 	file, err := os.OpenFile("zero.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -32,17 +31,17 @@ func main() {
 	log.SetOutput(file)
 
 	// TODO: 無限ループに
-	for i := 0; i < 3; i++ {
+	for {
 		wlanPinger, err := ping.NewPinger(wlanNic.remtoeAddress)
 		wlanPinger.SetPrivileged(true)
-		wlanPinger.Count = 1
+		wlanPinger.Count = 5
 		if err != nil {
 			panic(err)
 		}
 
 		ranPinger, err := ping.NewPinger(ranNic.remtoeAddress)
 		ranPinger.SetPrivileged(true)
-		ranPinger.Count = 1
+		ranPinger.Count = 5
 		if err != nil {
 			panic(err)
 		}
@@ -52,12 +51,7 @@ func main() {
 		ranPinger.Run()
 
 		wlanStats := wlanPinger.Statistics()
-		fmt.Printf("loss1: %f\n", wlanStats.PacketLoss)
-		fmt.Printf("AvgRtt1: %s\n", wlanStats.AvgRtt)
-
 		ranStats := ranPinger.Statistics()
-		fmt.Printf("loss2: %f\n", ranStats.PacketLoss)
-		fmt.Printf("AvgRtt2: %s\n", ranStats.AvgRtt)
 
 		if wlanStats.AvgRtt < ranStats.AvgRtt && !wlanNic.preffered {
 			if err = setCost(1, &wlanNic); err != nil {
@@ -82,7 +76,6 @@ func main() {
 			log.Println("RAN became priority")
 		}
 
-		fmt.Println()
 		time.Sleep(1 * time.Second)
 	}
 }
@@ -90,11 +83,12 @@ func main() {
 func setCost(cost int, peer *Peer) error {
 	localArgs := []string{"cost-set.sh", "localhost", peer.localIf, strconv.Itoa(cost)}
 	if err := exec.Command("/usr/bin/expect", localArgs...).Run(); err != nil {
+		// TODO: wrap error
 		return err
 	}
 	log.Printf("cost of %s is set to %d", peer.localAddress, cost)
 
-	remoteArgs := []string{"cost-set.sh", "192.168.100.1", peer.remoteIf, strconv.Itoa(cost)}
+	remoteArgs := []string{"cost-set.sh", "192.168.120.1", peer.remoteIf, strconv.Itoa(cost)}
 	if err := exec.Command("/usr/bin/expect", remoteArgs...).Run(); err != nil {
 		return err
 	}
