@@ -1,0 +1,130 @@
+2022/10/27 18:36:13 cost of localhost is set to 1
+2022/10/27 18:36:14 cost of 10.10.20.1 is set to 1
+2022/10/27 18:36:14 cost of localhost is set to 2
+2022/10/27 18:36:14 cost of 10.10.10.1 is set to 2
+2022/10/27 18:36:14 wlan became priority
+2022/10/27 18:36:23 cost of localhost is set to 1
+2022/10/27 18:36:23 cost of 10.10.10.1 is set to 1
+2022/10/27 18:36:23 cost of localhost is set to 2
+2022/10/27 18:36:23 cost of 10.10.20.1 is set to 2
+2022/10/27 18:36:23 RAN became priority
+2022/10/27 18:36:30 cost of localhost is set to 1
+2022/10/27 18:36:30 cost of 10.10.20.1 is set to 1
+2022/10/27 18:36:31 cost of localhost is set to 2
+2022/10/27 18:36:31 cost of 10.10.10.1 is set to 2
+2022/10/27 18:36:31 wlan became priority
+2022/10/27 18:38:23 cost of localhost is set to 1
+2022/10/27 18:38:23 cost of 10.10.20.1 is set to 1
+2022/10/27 18:38:23 cost of localhost is set to 2
+2022/10/27 18:38:23 cost of 10.10.10.1 is set to 2
+2022/10/27 18:38:23 wlan became priority
+2022/10/27 18:41:51 cost of localhost is set to 1
+2022/10/27 18:41:51 cost of 10.10.10.1 is set to 1
+2022/10/27 18:41:51 cost of localhost is set to 2
+2022/10/27 18:41:51 cost of 10.10.20.1 is set to 2
+2022/10/27 18:41:51 RAN became priority
+2022/10/27 18:42:08 cost of localhost is set to 1
+2022/10/27 18:42:08 cost of 10.10.20.1 is set to 1
+2022/10/27 18:42:08 cost of localhost is set to 2
+2022/10/27 18:42:09 cost of 10.10.10.1 is set to 2
+2022/10/27 18:42:09 wlan became priority
+2022/10/27 18:42:12 cost of localhost is set to 1
+2022/10/27 18:42:12 cost of 10.10.10.1 is set to 1
+2022/10/27 18:42:12 cost of localhost is set to 2
+2022/10/27 18:42:13 cost of 10.10.20.1 is set to 2
+2022/10/27 18:42:13 RAN became priority
+2022/10/27 18:42:20 cost of localhost is set to 1
+2022/10/27 18:42:20 cost of 10.10.20.1 is set to 1
+2022/10/27 18:42:20 cost of localhost is set to 2
+2022/10/27 18:42:21 cost of 10.10.10.1 is set to 2
+2022/10/27 18:42:21 wlan became priority
+2022/10/27 18:42:23 cost of localhost is set to 1
+2022/10/27 18:42:24 cost of 10.10.10.1 is set to 1
+2022/10/27 18:42:24 cost of localhost is set to 2
+2022/10/27 18:42:25 cost of 10.10.20.1 is set to 2
+2022/10/27 18:42:25 RAN became priority
+2022/10/27 18:42:43 cost of localhost is set to 1
+2022/10/27 18:42:44 cost of 10.10.20.1 is set to 1
+2022/10/27 18:42:44 cost of localhost is set to 2
+2022/10/27 18:42:45 cost of 10.10.10.1 is set to 2
+2022/10/27 18:42:45 wlan became priority
+2022/10/27 18:42:47 cost of localhost is set to 1
+2022/10/27 18:42:47 cost of 10.10.10.1 is set to 1
+2022/10/27 18:42:47 cost of localhost is set to 2
+2022/10/27 18:42:48 cost of 10.10.20.1 is set to 2
+2022/10/27 18:42:48 RAN became priority
+2022/10/27 18:42:50 cost of localhost is set to 1
+2022/10/27 18:42:51 cost of 10.10.20.1 is set to 1
+2022/10/27 18:42:51 cost of localhost is set to 2
+2022/10/27 18:42:52 cost of 10.10.10.1 is set to 2
+2022/10/27 18:42:52 wlan became priority
+2022/10/27 18:42:54 cost of localhost is set to 1
+2022/10/27 18:42:54 cost of 10.10.10.1 is set to 1
+2022/10/27 18:42:54 cost of localhost is set to 2
+2022/10/27 18:42:55 cost of 10.10.20.1 is set to 2
+2022/10/27 18:42:55 RAN became priority
+2022/11/11 14:37:38 cost of localhost is set to 1
+2022/11/11 14:37:39 cost of 10.10.20.1 is set to 1
+2022/11/11 14:37:39 cost of localhost is set to 2
+2022/11/11 14:37:40 cost of 10.10.10.1 is set to 2
+2022/11/11 14:37:40 wlan became priority
+2022/11/11 14:37:42 cost of localhost is set to 1
+2022/11/11 14:37:43 cost of 10.10.10.1 is set to 1
+2022/11/11 14:37:43 cost of localhost is set to 2
+2022/11/11 14:37:44 cost of 10.10.20.1 is set to 2
+2022/11/11 14:37:44 RAN became priority
+2022/11/11 14:37:47 cost of localhost is set to 1
+2022/11/11 14:37:48 cost of 10.10.20.1 is set to 1
+2022/11/11 14:37:48 cost of localhost is set to 2
+2022/11/11 14:37:49 cost of 10.10.10.1 is set to 2
+2022/11/11 14:37:49 wlan became priority
+2022/11/11 14:37:51 cost of localhost is set to 1
+2022/11/11 14:37:52 cost of 10.10.10.1 is set to 1
+2022/11/11 14:37:52 cost of localhost is set to 2
+2022/11/11 14:37:53 cost of 10.10.20.1 is set to 2
+2022/11/11 14:37:53 RAN became priority
+2022/11/11 14:37:55 cost of localhost is set to 1
+2022/11/11 14:37:56 cost of 10.10.20.1 is set to 1
+2022/11/11 14:37:56 cost of localhost is set to 2
+2022/11/11 14:37:57 cost of 10.10.10.1 is set to 2
+2022/11/11 14:37:57 wlan became priority
+2022/11/11 14:38:12 cost of localhost is set to 1
+2022/11/11 14:38:13 cost of 10.10.10.1 is set to 1
+2022/11/11 14:38:13 cost of localhost is set to 2
+2022/11/11 14:38:14 cost of 10.10.20.1 is set to 2
+2022/11/11 14:38:14 RAN became priority
+2022/11/11 14:38:17 cost of localhost is set to 1
+2022/11/11 14:38:18 cost of 10.10.20.1 is set to 1
+2022/11/11 14:38:18 cost of localhost is set to 2
+2022/11/11 14:38:19 cost of 10.10.10.1 is set to 2
+2022/11/11 14:38:19 wlan became priority
+2022/11/11 14:38:27 cost of localhost is set to 1
+2022/11/11 14:38:27 cost of 10.10.10.1 is set to 1
+2022/11/11 14:38:28 cost of localhost is set to 2
+2022/11/11 14:38:29 cost of 10.10.20.1 is set to 2
+2022/11/11 14:38:29 RAN became priority
+2022/11/11 14:38:31 cost of localhost is set to 1
+2022/11/11 14:38:32 cost of 10.10.20.1 is set to 1
+2022/11/11 14:38:32 cost of localhost is set to 2
+2022/11/11 14:38:32 cost of 10.10.10.1 is set to 2
+2022/11/11 14:38:32 wlan became priority
+2022/11/11 14:39:13 cost of localhost is set to 1
+2022/11/11 14:39:14 cost of 10.10.10.1 is set to 1
+2022/11/11 14:39:14 cost of localhost is set to 2
+2022/11/11 14:39:15 cost of 10.10.20.1 is set to 2
+2022/11/11 14:39:15 RAN became priority
+2022/11/11 14:39:38 cost of localhost is set to 1
+2022/11/11 14:39:39 cost of 10.10.20.1 is set to 1
+2022/11/11 14:39:39 cost of localhost is set to 2
+2022/11/11 14:39:39 cost of 10.10.10.1 is set to 2
+2022/11/11 14:39:39 wlan became priority
+2022/11/11 14:40:43 cost of localhost is set to 1
+2022/11/11 14:40:44 cost of 10.10.10.1 is set to 1
+2022/11/11 14:40:44 cost of localhost is set to 2
+2022/11/11 14:40:44 cost of 10.10.20.1 is set to 2
+2022/11/11 14:40:44 RAN became priority
+2022/11/11 14:40:47 cost of localhost is set to 1
+2022/11/11 14:40:49 cost of 10.10.20.1 is set to 1
+2022/11/11 14:40:49 cost of localhost is set to 2
+2022/11/11 14:40:50 cost of 10.10.10.1 is set to 2
+2022/11/11 14:40:50 wlan became priority

@@ -5,8 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"time"
-
 	"github.com/go-ping/ping"
 )
 
@@ -20,28 +18,27 @@ type Peer struct {
 }
 
 func main() {
-	wlanNic := Peer{remtoeAddress: "192.168.120.1", remoteIf: "wlan0", localIf: "wlan1", localAddress: "localhost", preffered: false}
+	wlanNic := Peer{remtoeAddress: "10.10.20.1", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
 	ranNic := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost", preffered: true}
 
-	file, err := os.OpenFile("zero.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile("ocaca.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 	log.SetOutput(file)
 
-	// TODO: 無限ループに
 	for {
 		wlanPinger, err := ping.NewPinger(wlanNic.remtoeAddress)
 		wlanPinger.SetPrivileged(true)
-		wlanPinger.Count = 5
+		wlanPinger.Count = 2
 		if err != nil {
 			panic(err)
 		}
 
 		ranPinger, err := ping.NewPinger(ranNic.remtoeAddress)
 		ranPinger.SetPrivileged(true)
-		ranPinger.Count = 5
+		ranPinger.Count = 2
 		if err != nil {
 			panic(err)
 		}
@@ -75,8 +72,6 @@ func main() {
 			wlanNic.preffered = false
 			log.Println("RAN became priority")
 		}
-
-		time.Sleep(1 * time.Second)
 	}
 }
 
@@ -88,7 +83,7 @@ func setCost(cost int, peer *Peer) error {
 	}
 	log.Printf("cost of %s is set to %d", peer.localAddress, cost)
 
-	remoteArgs := []string{"cost-set.sh", "192.168.120.1", peer.remoteIf, strconv.Itoa(cost)}
+	remoteArgs := []string{"cost-set.sh", "192.168.1.1", peer.remoteIf, strconv.Itoa(cost)}
 	if err := exec.Command("/usr/bin/expect", remoteArgs...).Run(); err != nil {
 		return err
 	}
