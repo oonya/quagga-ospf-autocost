@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-ping/ping"
 	"github.com/oonya/quagga-ospf-autocost/usecase/ospfd"
@@ -42,30 +43,18 @@ func main() {
 	}
 	defer file.Close()
 	log.SetOutput(file)
+	log.SetFlags(log.Lmicroseconds)
 
 	for {
-		wlanPinger, err := ping.NewPinger(wlanNic.remtoeAddress)
-		wlanPinger.SetPrivileged(true)
-		wlanPinger.Count = 2
-		if err != nil {
-			panic(err)
-		}
+		wlanCH := make(chan time.Duration)
+		ranCH := make(chan time.Duration)
+		go measureRTT(wlanNic.remtoeAddress, wlanCH)
+		go measureRTT(ranNic.remtoeAddress, ranCH)
 
-		ranPinger, err := ping.NewPinger(ranNic.remtoeAddress)
-		ranPinger.SetPrivileged(true)
-		ranPinger.Count = 2
-		if err != nil {
-			panic(err)
-		}
+		wlanStats := <-wlanCH
+		ranStats := <-ranCH
 
-		// TODO: 並列化
-		wlanPinger.Run()
-		ranPinger.Run()
-
-		wlanStats := wlanPinger.Statistics()
-		ranStats := ranPinger.Statistics()
-
-		if wlanStats.AvgRtt < ranStats.AvgRtt && !wlanNic.preffered {
+		if wlanStats < ranStats && !wlanNic.preffered {
 			ospfd.CostSet(localExp, 1, wlanNic.localIf)
 			ospfd.CostSet(localExp, 2, ranNic.localIf)
 			ospfd.CostSet(remoteExp, 1, wlanNic.remoteIf)
@@ -75,7 +64,7 @@ func main() {
 			ranNic.preffered = false
 			log.Println("wlan became priority")
 		}
-		if ranStats.AvgRtt < wlanStats.AvgRtt && !ranNic.preffered {
+		if ranStats < wlanStats && !ranNic.preffered {
 			ospfd.CostSet(localExp, 2, wlanNic.localIf)
 			ospfd.CostSet(localExp, 1, ranNic.localIf)
 			ospfd.CostSet(remoteExp, 2, wlanNic.remoteIf)
@@ -86,4 +75,17 @@ func main() {
 			log.Println("RAN became priority")
 		}
 	}
+}
+
+func measureRTT(addr string, ch chan time.Duration) {
+	pingger, err := ping.NewPinger(addr)
+	pingger.SetPrivileged(true)
+	pingger.Count = 2
+	if err != nil {
+		panic(err)
+	}
+
+	pingger.Run()
+	stats := pingger.Statistics()
+	ch <- stats.AvgRtt
 }

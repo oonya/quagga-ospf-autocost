@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	timeout = 1 * time.Second
+	timeout = 2 * time.Millisecond
 )
 
 func ConnectOspfd() (expect.Expecter, expect.Expecter, error) {
