@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"os"
-	"os/exec"
-	"strconv"
+
 	"github.com/go-ping/ping"
+	"github.com/oonya/quagga-ospf-autocost/usecase/ospfd"
 )
 
 // TODO: Peerよりいい名前募
@@ -18,6 +18,21 @@ type Peer struct {
 }
 
 func main() {
+	localExp, remoteExp, err := ospfd.ConnectOspfd()
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := localExp.Close(); err != nil {
+			log.Printf("localExp.Close failed: %v", err)
+		}
+	}()
+	defer func() {
+		if err := remoteExp.Close(); err != nil {
+			log.Printf("remoteExp.Close failed: %v", err)
+		}
+	}()
+	
 	wlanNic := Peer{remtoeAddress: "10.10.20.1", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
 	ranNic := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost", preffered: true}
 
@@ -51,42 +66,24 @@ func main() {
 		ranStats := ranPinger.Statistics()
 
 		if wlanStats.AvgRtt < ranStats.AvgRtt && !wlanNic.preffered {
-			if err = setCost(1, &wlanNic); err != nil {
-				log.Panicf("cost of wlan couldnt set to %d\n", 1)
-			}
-			if err = setCost(2, &ranNic); err != nil {
-				log.Panicf("cost of ran couldnt set to %d\n", 2)
-			}
+			ospfd.CostSet(localExp, 1, wlanNic.localIf)
+			ospfd.CostSet(localExp, 2, ranNic.localIf)
+			ospfd.CostSet(remoteExp, 1, wlanNic.remoteIf)
+			ospfd.CostSet(remoteExp, 2, ranNic.remoteIf)
+
 			wlanNic.preffered = true
 			ranNic.preffered = false
 			log.Println("wlan became priority")
 		}
 		if ranStats.AvgRtt < wlanStats.AvgRtt && !ranNic.preffered {
-			if err = setCost(1, &ranNic); err != nil {
-				log.Panicf("cost of ran couldnt set to %d\n", 1)
-			}
-			if err = setCost(2, &wlanNic); err != nil {
-				log.Panicf("cost of wlan couldnt set to %d\n", 2)
-			}
+			ospfd.CostSet(localExp, 2, wlanNic.localIf)
+			ospfd.CostSet(localExp, 1, ranNic.localIf)
+			ospfd.CostSet(remoteExp, 2, wlanNic.remoteIf)
+			ospfd.CostSet(remoteExp, 1, ranNic.remoteIf)
+
 			ranNic.preffered = true
 			wlanNic.preffered = false
 			log.Println("RAN became priority")
 		}
 	}
-}
-
-func setCost(cost int, peer *Peer) error {
-	localArgs := []string{"cost-set.sh", "localhost", peer.localIf, strconv.Itoa(cost)}
-	if err := exec.Command("/usr/bin/expect", localArgs...).Run(); err != nil {
-		// TODO: wrap error
-		return err
-	}
-	log.Printf("cost of %s is set to %d", peer.localAddress, cost)
-
-	remoteArgs := []string{"cost-set.sh", "192.168.1.1", peer.remoteIf, strconv.Itoa(cost)}
-	if err := exec.Command("/usr/bin/expect", remoteArgs...).Run(); err != nil {
-		return err
-	}
-	log.Printf("cost of %s is set to %d", peer.remtoeAddress, cost)
-	return nil
 }
