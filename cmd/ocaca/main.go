@@ -78,14 +78,17 @@ func main() {
 }
 
 func measureRTT(addr string, ch chan time.Duration) {
-	pingger, err := ping.NewPinger(addr)
-	pingger.SetPrivileged(true)
-	pingger.Count = 2
+	pinger, err := ping.NewPinger(addr)
+	pinger.SetPrivileged(true)
+	pinger.Interval = 5 * time.Millisecond
 	if err != nil {
 		panic(err)
 	}
 
-	pingger.Run()
-	stats := pingger.Statistics()
+	go pinger.Run()
+	time.Sleep(15 * time.Millisecond)
+	pinger.Stop()
+	
+	stats := pinger.Statistics()
 	ch <- stats.AvgRtt
 }
