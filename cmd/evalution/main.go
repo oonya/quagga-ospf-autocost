@@ -58,7 +58,7 @@ func main() {
 
 func execIperf3(done chan struct{}) {
 	evalLogger.Println("start")
-	args := []string{"-c192.168.3.3", "-b1M", "-i1", "-t6"}
+	args := []string{"-c192.168.3.4", "-b1M", "-i1", "-t6"}
 	if err := exec.Command("/usr/bin/iperf3", args...).Run(); err != nil {
 		// TODO: wrap error
 		panic(err)

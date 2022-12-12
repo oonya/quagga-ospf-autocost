@@ -9,3 +9,13 @@ evalSeq:
 .PHONY: evalRTT
 evalRTT:
 	/usr/local/go/bin/go run cmd/evalution/main.go ping
+
+.PHONY: ocacaLog
+ocacaLog:
+	echo '' > /home/oonya/quagga-ospf-autocost/ocaca.log
+	tail -f /home/oonya/quagga-ospf-autocost/ocaca.log
+
+.PHONY: evalLog
+evalLog:
+	echo '' > /home/oonya/quagga-ospf-autocost/evalution.log
+	tail -f /home/oonya/quagga-ospf-autocost/evalution.log
