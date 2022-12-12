@@ -17,7 +17,7 @@ func ConnectOspfd() (expect.Expecter, expect.Expecter, error) {
 		panic(err)
 	}
 
-	remoteExp, _, err := telnetSpawn("192.168.1.1:2604", time.Second, expect.Verbose(true))
+	remoteExp, _, err := telnetSpawn("192.168.3.3:2604", time.Second, expect.Verbose(true))
 	if err != nil {
 		panic(err)
 	}

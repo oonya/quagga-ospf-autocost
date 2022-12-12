@@ -23,7 +23,7 @@ func main() {
 	evalLogger = log.New(file, "", log.Lmicroseconds)
 
 	done := make(chan struct{})
-	timer := time.After(10 * time.Second)
+	timer := time.After(3 * time.Second)
 
 	switch cmd {
 	case "iperf3":
@@ -39,14 +39,14 @@ func main() {
 	for {
 		select {
 		case <- done:
-			args := []string{"qdisc", "del", "dev", "wlan1", "root"}
+			args := []string{"qdisc", "change", "dev", "wlan1", "root", "handle", "1:0", "netem", "delay", "1ms"}
 			if err := exec.Command("/usr/sbin/tc", args...).Run(); err != nil {
 				// TODO: wrap error
 				panic(err)
 			}
 			return
 		case <-timer:
-			args := []string{"qdisc", "add", "dev", "wlan1", "root", "handle", "1:0", "netem", "delay", "100ms"}
+			args := []string{"qdisc", "change", "dev", "wlan1", "root", "handle", "1:0", "netem", "delay", "5ms"}
 			if err := exec.Command("/usr/sbin/tc", args...).Run(); err != nil {
 				// TODO: wrap error
 				panic(err)
@@ -58,7 +58,7 @@ func main() {
 
 func execIperf3(done chan struct{}) {
 	evalLogger.Println("start")
-	args := []string{"-c192.168.3.3", "-b1M", "-i1", "-t20"}
+	args := []string{"-c192.168.3.3", "-b1M", "-i1", "-t6"}
 	if err := exec.Command("/usr/bin/iperf3", args...).Run(); err != nil {
 		// TODO: wrap error
 		panic(err)
@@ -75,7 +75,7 @@ func execPing(done chan struct{}) {
 	pinger.SetPrivileged(true)
 	pinger.Interval = 100 * time.Millisecond
 	
-	timer := time.After(20 * time.Second)
+	timer := time.After(6 * time.Second)
 
 	pinger.OnRecv = func(pkt *ping.Packet) {
 			evalLogger.Printf("%d bytes from %s: icmp_seq=%d time=%v\n",

@@ -34,8 +34,8 @@ func main() {
 		}
 	}()
 	
-	wlanNic := Peer{remtoeAddress: "10.10.20.1", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
-	ranNic := Peer{remtoeAddress: "10.10.10.1", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost", preffered: true}
+	wlanNic := Peer{remtoeAddress: "10.10.20.3", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
+	ranNic := Peer{remtoeAddress: "10.10.10.3", remoteIf: "srsgre", localIf: "srsgre", localAddress: "localhost", preffered: true}
 
 	file, err := os.OpenFile("ocaca.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
