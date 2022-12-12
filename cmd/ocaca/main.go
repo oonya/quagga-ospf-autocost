@@ -18,32 +18,36 @@ type Peer struct {
 	preffered     bool
 }
 
+var ocacaLogger *log.Logger
+
 func main() {
+	file, err := os.OpenFile("ocaca.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	ocacaLogger = log.New(file, "", log.Lmicroseconds)
+	log.SetFlags(log.Lmicroseconds)
+
 	localExp, remoteExp, err := ospfd.ConnectOspfd()
 	if err != nil {
 		panic(err)
 	}
 	defer func() {
 		if err := localExp.Close(); err != nil {
-			log.Printf("localExp.Close failed: %v", err)
+			ocacaLogger.Printf("localExp.Close failed: %v", err)
 		}
 	}()
 	defer func() {
 		if err := remoteExp.Close(); err != nil {
-			log.Printf("remoteExp.Close failed: %v", err)
+			ocacaLogger.Printf("remoteExp.Close failed: %v", err)
 		}
 	}()
 	
 	wlanNic := Peer{remtoeAddress: "10.10.20.3", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
 	ranNic := Peer{remtoeAddress: "10.10.10.3", remoteIf: "rangre", localIf: "rangre", localAddress: "localhost", preffered: true}
 
-	file, err := os.OpenFile("ocaca.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	log.SetOutput(file)
-	log.SetFlags(log.Lmicroseconds)
 
 	for {
 		wlanCH := make(chan time.Duration)
@@ -62,7 +66,7 @@ func main() {
 
 			wlanNic.preffered = true
 			ranNic.preffered = false
-			log.Println("wlan became priority")
+			ocacaLogger.Println("wlan became priority")
 		}
 		if ranStats < wlanStats && !ranNic.preffered {
 			ospfd.CostSet(localExp, 2, wlanNic.localIf)
@@ -72,7 +76,7 @@ func main() {
 
 			ranNic.preffered = true
 			wlanNic.preffered = false
-			log.Println("RAN became priority")
+			ocacaLogger.Println("RAN became priority")
 		}
 	}
 }
