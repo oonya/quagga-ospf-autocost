@@ -1,3 +1,7 @@
+.PHONY: init
+init:
+	sudo /usr/local/go/bin/go mod tidy
+
 .PHONY: ocaca
 ocaca:
 	/usr/local/go/bin/go run cmd/ocaca/main.go
