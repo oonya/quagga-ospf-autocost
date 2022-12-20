@@ -39,14 +39,14 @@ func main() {
 	for {
 		select {
 		case <- done:
-			args := []string{"qdisc", "change", "dev", "wlan1", "root", "handle", "1:0", "netem", "delay", "1ms"}
+			args := []string{"qdisc", "change", "dev", "wlangre", "root", "handle", "1:0", "netem", "delay", "1ms"}
 			if err := exec.Command("/usr/sbin/tc", args...).Run(); err != nil {
 				// TODO: wrap error
 				panic(err)
 			}
 			return
 		case <-timer:
-			args := []string{"qdisc", "change", "dev", "wlan1", "root", "handle", "1:0", "netem", "delay", "5ms"}
+			args := []string{"qdisc", "change", "dev", "wlangre", "root", "handle", "1:0", "netem", "delay", "5ms"}
 			if err := exec.Command("/usr/sbin/tc", args...).Run(); err != nil {
 				// TODO: wrap error
 				panic(err)
@@ -58,7 +58,7 @@ func main() {
 
 func execIperf3(done chan struct{}) {
 	evalLogger.Println("start")
-	args := []string{"-c192.168.3.4", "-b1M", "-i1", "-t6"}
+	args := []string{"-c192.168.3.4", "-b100M", "-i1", "-t6"}
 	if err := exec.Command("/usr/bin/iperf3", args...).Run(); err != nil {
 		// TODO: wrap error
 		panic(err)
