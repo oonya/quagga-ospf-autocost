@@ -6,7 +6,9 @@ import (
 	"os/exec"
 	"time"
 	"flag"
+	"fmt"
 	"github.com/go-ping/ping"
+	"encoding/csv"
 )
 
 var evalLogger *log.Logger
@@ -70,6 +72,14 @@ func execIperf3(done chan struct{}) {
 }
 
 func execPing(done chan struct{}) {
+	file, err := os.OpenFile("rtt.csv", os.O_RDWR | os.O_CREATE | os.O_TRUNC, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	csvWriter := csv.NewWriter(file)
+	csvWriter.Write([]string{"sequence", "times[us]", "RTT[us]"})
+	
 	pinger, err := ping.NewPinger("192.168.3.3")
 	if err != nil {
 		panic(err)
@@ -77,16 +87,21 @@ func execPing(done chan struct{}) {
 	pinger.SetPrivileged(true)
 	pinger.Interval = 100 * time.Millisecond
 
+	now := time.Now()
+
 	pinger.OnRecv = func(pkt *ping.Packet) {
-			evalLogger.Printf("%d bytes from %s: icmp_seq=%d time=%v\n",
-					pkt.Nbytes, pkt.IPAddr, pkt.Seq, pkt.Rtt)
+		evalLogger.Printf("%d bytes from %s: icmp_seq=%d time=%v\n", pkt.Nbytes, pkt.IPAddr, pkt.Seq, pkt.Rtt)
+
+		csvWriter.Write([]string{
+			fmt.Sprintf("%d", pkt.Seq),
+			fmt.Sprintf("%d", time.Since(now).Microseconds()),
+			fmt.Sprintf("%d", pkt.Rtt),
+		})
 	}
 	pinger.OnFinish = func(stats *ping.Statistics) {
-			evalLogger.Printf("\n--- %s ping statistics ---\n", stats.Addr)
-			evalLogger.Printf("%d packets transmitted, %d packets received, %v%% packet loss\n",
-					stats.PacketsSent, stats.PacketsRecv, stats.PacketLoss)
-			evalLogger.Printf("round-trip min/avg/max/stddev = %v/%v/%v/%v\n",
-					stats.MinRtt, stats.AvgRtt, stats.MaxRtt, stats.StdDevRtt)
+		evalLogger.Printf("\n--- %s ping statistics ---\n", stats.Addr)
+		evalLogger.Printf("%d packets transmitted, %d packets received, %v%% packet loss\n", stats.PacketsSent, stats.PacketsRecv, stats.PacketLoss)
+		evalLogger.Printf("round-trip min/avg/max/stddev = %v/%v/%v/%v\n", stats.MinRtt, stats.AvgRtt, stats.MaxRtt, stats.StdDevRtt)
 	}
 
 	evalLogger.Printf("PING %s (%s):\n", pinger.Addr(), pinger.IPAddr())
@@ -96,7 +111,7 @@ func execPing(done chan struct{}) {
 
 	time.Sleep(6 * time.Second)
 	pinger.Stop()
-	evalLogger.Println(pinger.Statistics().AvgRtt)
+	csvWriter.Flush()
 	evalLogger.Println("done")
 	close(done)
 }
