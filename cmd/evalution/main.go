@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"time"
 	"flag"
-	"fmt"
+	"strconv"
 	"github.com/go-ping/ping"
 	"encoding/csv"
 )
@@ -93,9 +93,9 @@ func execPing(done chan struct{}) {
 		evalLogger.Printf("%d bytes from %s: icmp_seq=%d time=%v\n", pkt.Nbytes, pkt.IPAddr, pkt.Seq, pkt.Rtt)
 
 		csvWriter.Write([]string{
-			fmt.Sprintf("%d", pkt.Seq),
-			fmt.Sprintf("%d", time.Since(now).Microseconds()),
-			fmt.Sprintf("%d", pkt.Rtt),
+			strconv.Itoa(pkt.Seq),
+			strconv.FormatInt(time.Since(now).Microseconds(), 10),
+			strconv.FormatInt(pkt.Rtt.Microseconds(), 10),
 		})
 	}
 	pinger.OnFinish = func(stats *ping.Statistics) {

@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"time"
+	"encoding/csv"
+	"strconv"
 
 	"github.com/go-ping/ping"
 	"github.com/oonya/quagga-ospf-autocost/usecase/ospfd"
@@ -30,6 +32,26 @@ func main() {
 	ocacaLogger = log.New(file, "", log.Lmicroseconds)
 	log.SetFlags(log.Lmicroseconds)
 
+	wlanCsv, err := os.OpenFile("rtt-wlan.csv", os.O_RDWR | os.O_CREATE | os.O_TRUNC, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer wlanCsv.Close()
+	ranCsv, err := os.OpenFile("rtt-ran.csv", os.O_RDWR | os.O_CREATE | os.O_TRUNC, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer ranCsv.Close()
+
+	wlanCsvWriter := csv.NewWriter(wlanCsv)
+	if err := wlanCsvWriter.Write([]string{"sequence", "times[us]", "RTT[us]"}); err != nil {
+		panic(err)
+	}
+	ranCsvWriter := csv.NewWriter(ranCsv)
+	if err := ranCsvWriter.Write([]string{"sequence", "times[us]", "RTT[us]"}); err != nil {
+		panic(err)
+	}
+
 	localExp, remoteExp, err := ospfd.ConnectOspfd()
 	if err != nil {
 		panic(err)
@@ -52,8 +74,8 @@ func main() {
 	for {
 		wlanCH := make(chan time.Duration)
 		ranCH := make(chan time.Duration)
-		go measureRTT(wlanNic.remtoeAddress, wlanCH)
-		go measureRTT(ranNic.remtoeAddress, ranCH)
+		go measureRTT(wlanNic.remtoeAddress, wlanCH, wlanCsvWriter)
+		go measureRTT(ranNic.remtoeAddress, ranCH, ranCsvWriter)
 
 		wlanStats := <-wlanCH
 		ranStats := <-ranCH
@@ -81,7 +103,7 @@ func main() {
 	}
 }
 
-func measureRTT(addr string, ch chan time.Duration) {
+func measureRTT(addr string, ch chan time.Duration, csvWriter *csv.Writer) {
 	pinger, err := ping.NewPinger(addr)
 	pinger.SetPrivileged(true)
 	pinger.Interval = 5 * time.Millisecond
@@ -89,9 +111,22 @@ func measureRTT(addr string, ch chan time.Duration) {
 		panic(err)
 	}
 
+	now := time.Now()
+	pinger.OnRecv = func(pkt *ping.Packet) {
+		// TODO: sequence nubmerを数え上げ
+		if err = csvWriter.Write([]string{
+			strconv.Itoa(pkt.Seq),
+			strconv.FormatInt(time.Since(now).Microseconds(), 10),
+			strconv.FormatInt(pkt.Rtt.Microseconds(), 10),
+		}); err != nil {
+			panic(err)
+		}
+	}
+
 	go pinger.Run()
 	time.Sleep(15 * time.Millisecond)
 	pinger.Stop()
+	csvWriter.Flush()
 	
 	stats := pinger.Statistics()
 	ch <- stats.AvgRtt
