@@ -58,7 +58,7 @@ func main() {
 
 func execIperf3(done chan struct{}) {
 	evalLogger.Println("start")
-	args := []string{"-c192.168.3.4", "-b100M", "-i1", "-t6"}
+	args := []string{"-c192.168.3.4", "-b50M", "-i1", "-t6", "-B192.168.1.1"}
 	if err := exec.Command("/usr/bin/iperf3", args...).Run(); err != nil {
 		// TODO: wrap error
 		panic(err)
@@ -74,8 +74,6 @@ func execPing(done chan struct{}) {
 	}
 	pinger.SetPrivileged(true)
 	pinger.Interval = 100 * time.Millisecond
-	
-	timer := time.After(6 * time.Second)
 
 	pinger.OnRecv = func(pkt *ping.Packet) {
 			evalLogger.Printf("%d bytes from %s: icmp_seq=%d time=%v\n",
@@ -94,7 +92,7 @@ func execPing(done chan struct{}) {
 	evalLogger.Println("start")
 	go pinger.Run()
 
-	<-timer
+	time.Sleep(6 * time.Second)
 	pinger.Stop()
 	evalLogger.Println(pinger.Statistics().AvgRtt)
 	evalLogger.Println("done")
