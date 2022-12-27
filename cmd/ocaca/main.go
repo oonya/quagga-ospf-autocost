@@ -21,6 +21,7 @@ type Peer struct {
 }
 
 var ocacaLogger *log.Logger
+var now time.Time
 
 func main() {
 	file, err := os.OpenFile("ocaca.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -70,7 +71,7 @@ func main() {
 	wlanNic := Peer{remtoeAddress: "10.10.20.3", remoteIf: "wlangre", localIf: "wlangre", localAddress: "localhost", preffered: false}
 	ranNic := Peer{remtoeAddress: "10.10.10.3", remoteIf: "rangre", localIf: "rangre", localAddress: "localhost", preffered: true}
 
-
+	now = time.Now()
 	for {
 		wlanCH := make(chan time.Duration)
 		ranCH := make(chan time.Duration)
@@ -111,7 +112,6 @@ func measureRTT(addr string, ch chan time.Duration, csvWriter *csv.Writer) {
 		panic(err)
 	}
 
-	now := time.Now()
 	pinger.OnRecv = func(pkt *ping.Packet) {
 		// TODO: sequence nubmerを数え上げ
 		if err = csvWriter.Write([]string{
