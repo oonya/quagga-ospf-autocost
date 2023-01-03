@@ -2,6 +2,11 @@
 init:
 	sudo /usr/local/go/bin/go mod tidy
 
+.PHONY: evalInit
+evalInit:
+	/usr/bin/rm -f /home/oonya/quagga-ospf-autocost/rtt*
+	/usr/bin/rm -f /home/oonya/caputure/*
+
 .PHONY: ocaca
 ocaca:
 	/usr/local/go/bin/go run cmd/ocaca/main.go

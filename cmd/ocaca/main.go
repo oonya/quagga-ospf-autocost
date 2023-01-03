@@ -6,6 +6,7 @@ import (
 	"time"
 	"encoding/csv"
 	"strconv"
+	// "io/ioutil"
 
 	"github.com/go-ping/ping"
 	"github.com/oonya/quagga-ospf-autocost/usecase/ospfd"
@@ -43,6 +44,8 @@ func main() {
 		panic(err)
 	}
 	defer ranCsv.Close()
+	// wlanCsv := ioutil.Discard
+	// ranCsv := ioutil.Discard
 
 	wlanCsvWriter := csv.NewWriter(wlanCsv)
 	if err := wlanCsvWriter.Write([]string{"sequence", "times[us]", "RTT[us]"}); err != nil {
@@ -127,7 +130,7 @@ func measureRTT(addr string, ch chan time.Duration, csvWriter *csv.Writer) {
 	time.Sleep(15 * time.Millisecond)
 	pinger.Stop()
 	csvWriter.Flush()
-	
+
 	stats := pinger.Statistics()
 	ch <- stats.AvgRtt
 }
