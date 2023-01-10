@@ -4,8 +4,8 @@ init:
 
 .PHONY: evalInit
 evalInit:
-	/usr/bin/rm -f /home/oonya/quagga-ospf-autocost/rtt*
-	/usr/bin/rm -f /home/oonya/caputure/*
+	sudo /usr/bin/rm -f /home/oonya/quagga-ospf-autocost/rtt*
+	sudo /usr/bin/rm -f /home/oonya/caputure/*
 
 .PHONY: ocaca
 ocaca:
@@ -13,11 +13,11 @@ ocaca:
 
 .PHONY: evalSeq
 evalSeq:
-	/usr/local/go/bin/go run cmd/evalution/main.go iperf3
+	/usr/local/go/bin/go run cmd/evalution/sequence/main.go
 
 .PHONY: evalRTT
 evalRTT:
-	/usr/local/go/bin/go run cmd/evalution/main.go ping
+	/usr/local/go/bin/go run cmd/evalution/rtt/main.go
 
 .PHONY: ocacaLog
 ocacaLog:
